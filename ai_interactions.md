@@ -1,10 +1,47 @@
-# AI Interactions Log — PawPal+
+Aquí tienes el archivo **`ai_interactions.md`** completo, combinando el trabajo anterior del Módulo 2 con la nueva sección del Capstone (Agentic Workflow). 
 
-> Documents how AI assistants were used across the PawPal+ project.
+Cópialo todo, pégalo en tu archivo `ai_interactions.md` y guarda con **`Ctrl + S`**:
+
+```markdown
+# AI Interactions Log — PawPal+ & Capstone
+
+> Documents how AI assistants were used across the PawPal+ project and its Capstone evolution.
 
 ---
 
-## Agent Workflow (Stretch Feature 4)
+## 🧠 Capstone: Agentic Workflow Reasoning Trace (Stretch Feature)
+
+For the final Applied AI System, the natural language parsing was upgraded from a deterministic Regex approach to an LLM Agent (`llm_agent.py`). The rubric requires the agent's reasoning trace to be documented. 
+
+### Trace: Parsing "Take Cooper for a walk at 6:30pm daily, it's urgent"
+
+**1. Observation & Context Extraction:**
+The Agent receives the raw user string. It scans for domain-specific entities: `pet_name`, `action`, `time`, `frequency`, and `priority`.
+
+**2. Constraint Check & Translation:**
+- *Time:* "6:30pm" must be converted to 24-hour format "18:30" to match the `Task.time` schema.
+- *Pet Name:* The Agent must cross-reference the extracted name ("Cooper") against the `known_pets` list provided in the context.
+- *Priority:* The word "urgent" maps to the highest priority ("high").
+
+**3. Action Generation (Prompting):**
+The Agent constructs a strict system prompt with JSON schema constraints:
+> *"Return ONLY a valid JSON object with these exact keys... If you cannot find a time, default to '12:00'. Do not include markdown formatting."*
+
+**4. Execution:**
+The Agent calls the OpenRouter API (using a free Llama/Flint model), sending the system prompt and user text. 
+
+**5. Validation (The Guardrails):**
+Before returning the parsed task to the UI, the Agent enforces three Guardrails:
+- **Markdown Stripper:** Removes any ` ```json ` blocks the LLM accidentally outputted.
+- **Time Regex Validator:** Ensures the LLM did not hallucinate an impossible time (e.g., "25:00").
+- **Pet Hallucination Check:** Verifies the returned `pet_name` actually exists in the user's database (otherwise sets it to `None`).
+
+**6. Fallback Execution:**
+If the API fails (Error 404, 429, 503) at *any* point during steps 4-5, the Agent logs the error and immediately executes the deterministic `regex_parse_task()` so the user experiences 100% uptime.
+
+---
+
+## Agent Workflow (Module 2 Stretch Feature)
 
 **Task given to the agent (Gemini):**
 
@@ -46,7 +83,7 @@ find_next_available_slot(self, tasks: list[Task], duration_minutes: int = 30) ->
 
 ---
 
-## AI Model Comparison (Stretch Feature 5)
+## AI Model Comparison (Module 2 Stretch Feature)
 
 **Task given to both models:**
 
@@ -174,3 +211,4 @@ Use date.today() for due_date. Import from pawpal_system.
 | 6 | `test_scheduler_detect_conflicts` | `Scheduler.detect_conflicts()` finds same-time pairs |
 
 **Verification:** `python -m pytest -v` → 6 passed in 1.11s.
+```

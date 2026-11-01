@@ -65,16 +65,9 @@ Task instance for the next occurrence instead of mutating the original.
 demo shows the returned task without persisting it, which is intentional —
 the UI in Phase 3 could later expose a "generate next occurrence" button.
 
-**Known limitation:**
-`handle_recurring()` is currently **not wired into the "Mark Done" flow** in
-the Streamlit UI. When a daily task is marked complete, a new instance is
-**not** automatically created. This is a deliberate scope decision to keep
-Phase 4 minimal — the algorithm exists and is tested, but the integration is
-left as a future improvement.
-
 ---
 
-## 2. AI Collaboration Reflection
+## 2. AI Collaboration Reflection (Phase 2)
 
 ### What the AI suggested
 

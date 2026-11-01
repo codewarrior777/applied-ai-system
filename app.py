@@ -6,18 +6,21 @@ SECURITY NOTE:
     data manually via the download/upload buttons.
 
 AI FEATURE:
-    The "🪄 AI Assistant" tab accepts free-form text like
-    "walk Cooper at 7am daily, high priority" and uses the regex-based
-    parser in nl_parser.py to extract a structured Task.
+    The "🪄 AI Assistant" tab accepts free-form text and uses the LLM Agent
+    (via OpenRouter) to extract a structured Task with Regex fallback.
 """
 
 import json
+import os
 from datetime import date
 
 import streamlit as st
+from dotenv import load_dotenv
 
 from pawpal_system import Owner, Pet, Scheduler, Task
 
+# Cargar variables de entorno (OPENROUTER_API_KEY)
+load_dotenv()
 
 def _is_onboarded(owner: Owner) -> bool:
     """Return True if the owner has completed onboarding (name is set)."""
@@ -255,12 +258,12 @@ def main() -> None:
                         st.error("Please enter a task description.")
 
     # ------------------------------------------------------------------
-    # TAB 3: AI Assistant — Natural Language Parsing
+    # TAB 3: AI Assistant — Natural Language Parsing (LLM Agent)
     # ------------------------------------------------------------------
     with tab_ai:
         st.subheader("🪄 AI Task Assistant")
         st.write(
-            "Describe a task in natural language and let the parser "
+            "Describe a task in natural language and let the AI Agent "
             "extract the details."
         )
 
@@ -281,7 +284,7 @@ def main() -> None:
 
         col1, col2 = st.columns([1, 3])
         with col1:
-            parse_btn = st.button("🪄 Parse", type="primary")
+            parse_btn = st.button("🪄 Parse with AI", type="primary")
         with col2:
             if st.button("✖ Clear"):
                 st.session_state.ai_parsed = None
@@ -292,10 +295,11 @@ def main() -> None:
                 st.error("Please enter some text first.")
             else:
                 try:
-                    from nl_parser import parse_task as _parse
+                    # Usamos el nuevo Agente de IA con Guardrails
+                    from llm_agent import parse_task_with_llm
 
                     known_pets = [p.name for p in owner.pets]
-                    parsed = _parse(nl_text, known_pets)
+                    parsed = parse_task_with_llm(nl_text, known_pets)
                     st.session_state.ai_parsed = parsed
                 except ValueError as e:
                     st.session_state.ai_parsed = None

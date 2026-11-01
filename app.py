@@ -11,7 +11,6 @@ AI FEATURE:
 """
 
 import json
-import os
 from datetime import date
 
 import streamlit as st
@@ -21,6 +20,7 @@ from pawpal_system import Owner, Pet, Scheduler, Task
 
 # Cargar variables de entorno (OPENROUTER_API_KEY)
 load_dotenv()
+
 
 def _is_onboarded(owner: Owner) -> bool:
     """Return True if the owner has completed onboarding (name is set)."""

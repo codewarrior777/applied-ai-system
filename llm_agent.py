@@ -4,12 +4,15 @@ Uses OpenRouter (via the OpenAI SDK) to extract structured JSON.
 Includes a Regex fallback for maximum reliability.
 """
 
-import os
 import json
+import os
 import re
-from openai import OpenAI
-from nl_parser import parse_task as regex_parse_task, ParsedTask
+
 from dotenv import load_dotenv
+from openai import OpenAI
+
+from nl_parser import ParsedTask
+from nl_parser import parse_task as regex_parse_task
 
 # Aseguramos que las variables de entorno (.env) se carguen
 load_dotenv()
@@ -17,17 +20,21 @@ load_dotenv()
 # Configuración del cliente OpenRouter
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY", "dummy_key")
+    api_key=os.getenv("OPENROUTER_API_KEY", "dummy_key"),
 )
 
-# Modelo exacto obtenido de OpenRouter (Uptime 13.19%)
+# Modelo actual (puedes cambiarlo si OpenRouter lo descontinúa)
 MODEL = "recursive/flint-v1.0:free"
+
 
 def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
     """Agente de IA con Guardrails y Fallback."""
-    
+
     # Guardrail 0: Verificar si existe la API Key
-    if not os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENROUTER_API_KEY") == "dummy_key":
+    if (
+        not os.getenv("OPENROUTER_API_KEY")
+        or os.getenv("OPENROUTER_API_KEY") == "dummy_key"
+    ):
         print("[Guardrail] Clave API no encontrada. Usando parser Regex.")
         return regex_parse_task(text, known_pets)
 
@@ -49,38 +56,39 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
             model=MODEL,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": text}
+                {"role": "user", "content": text},
             ],
             temperature=0.1,
-            max_tokens=150
+            max_tokens=150,
         )
-        
+
         raw_json = response.choices[0].message.content.strip()
-        
+
         # Guardrail 1: Limpiar markdown si el LLM lo incluye por error
         if raw_json.startswith("```json"):
             raw_json = raw_json.replace("```json", "").replace("```", "").strip()
-            
+
         data = json.loads(raw_json)
-        
+
         # Guardrail 2: Validar formato de hora estricto con Regex (evita alucinaciones como 25:00)
         if not re.match(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", data.get("time", "")):
-             raise ValueError(f"Hora inválida generada por la IA: {data.get('time')}")
-             
+            raise ValueError(f"Hora inválida generada por la IA: {data.get('time')}")
+
         # Guardrail 3: Validar que la mascota exista en la base de datos del usuario
         if data.get("pet_name") not in known_pets:
             data["pet_name"] = None
-            
+
         print("[Agentic AI] Tarea extraída por el LLM exitosamente.")
         return ParsedTask(
             description=data.get("description", "Task"),
             time=data.get("time", "12:00"),
             frequency=data.get("frequency", "once"),
             priority=data.get("priority", "medium"),
-            pet_name=data.get("pet_name")
+            pet_name=data.get("pet_name"),
         )
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         # El Fallback: Si la API falla (404, 429, timeout, etc.), usa Regex y no rompe la app.
+        # Añadimos
         print(f"[Guardrail] Error en LLM ({e}). Usando parser Regex (Fallback).")
         return regex_parse_task(text, known_pets)

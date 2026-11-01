@@ -1,8 +1,3 @@
-Aquí tienes el archivo **`ai_interactions.md`** completo, combinando el trabajo anterior del Módulo 2 con la nueva sección del Capstone (Agentic Workflow). 
-
-Cópialo todo, pégalo en tu archivo `ai_interactions.md` y guarda con **`Ctrl + S`**:
-
-```markdown
 # AI Interactions Log — PawPal+ & Capstone
 
 > Documents how AI assistants were used across the PawPal+ project and its Capstone evolution.

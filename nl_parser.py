@@ -149,9 +149,6 @@ def parse_task(text: str, known_pets: list[str] | None = None) -> ParsedTask:
         A ParsedTask with description, time, frequency, priority,
         and optional pet_name.
 
-    Raises:
-        ValueError: if no time could be extracted.
-
     Examples:
         >>> parse_task("walk Cooper at 7am daily, high priority", ["Cooper"])
         ParsedTask(description='Walk Cooper', time='07:00', frequency='daily',
@@ -173,11 +170,12 @@ def parse_task(text: str, known_pets: list[str] | None = None) -> ParsedTask:
     priority, working = _extract_priority(working)
     time_str, working = _extract_time(working)
 
+    # --- ARREGLO AQUÍ ---
+    # Si no se encuentra la hora, usamos "12:00" por defecto en lugar de romper la app.
     if time_str is None:
-        raise ValueError(
-            f"Could not find a time in: {text!r}. "
-            "Try formats like '7am', '7:30pm', or '14:00'."
-        )
+        print(f"[Fallback] No se encontró hora en: {text!r}. Usando 12:00 por defecto.")
+        time_str = "12:00"
+    # --------------------
 
     # 4. Clean up the remaining description
     description = re.sub(r"[\s,]+", " ", working).strip(" ,.-")
@@ -205,6 +203,7 @@ if __name__ == "__main__":
         ("vet visit for Prince at 2pm next week", ["Cooper", "Prince"]),
         ("playtime with Cooper at 3:15pm, low priority", ["Cooper"]),
         ("Morning grooming at 09:00", []),
+        ("Feed Prince", ["Prince"]), # Prueba del fallback
     ]
 
     print("=" * 70)

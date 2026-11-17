@@ -1,0 +1,28 @@
+graph TD
+    %% User Input
+    User([👤 User Input]) -->|Text: 'Walk Cooper at 7am'| UI[💻 Streamlit UI / FastAPI]
+
+    %% AI Processing
+    UI -->|Sends Text| Agent[🧠 AI Agent - llm_agent.py]
+    Agent -->|Prompt & API Key| OpenRouter{☁️ OpenRouter API}
+
+    %% Success Path
+    OpenRouter -->|Valid JSON| Guardrail{🛡️ Guardrails Validation}
+    
+    %% Failure Path
+    OpenRouter -.->|Error 404/429/503| Fallback[🔙 Regex Fallback - nl_parser.py]
+
+    %% Guardrail Check
+    Guardrail -->|Invalid Time/Pet| Fallback
+    Guardrail -->|Valid Data| Task[🐾 pawpal_system.Task Object]
+    Fallback -->|Processed Data| Task
+
+    %% System Execution
+    Task -->|Saved to| DB[(💾 Session State / JSON)]
+    Task -->|Processed by| Scheduler[📅 Scheduler Logic]
+    Scheduler -->|Output| Results([📋 Schedule & Conflicts])
+
+    %% Styling
+    style Agent fill:#bbf,stroke:#333,stroke-width:2px
+    style Guardrail fill:#dfd,stroke:#333,stroke-width:2px
+    style Fallback fill:#fdd,stroke:#333,stroke-width:2px

@@ -23,7 +23,7 @@ client = OpenAI(
     api_key=os.getenv("OPENROUTER_API_KEY", "dummy_key"),
 )
 
-# Modelo actual (puedes cambiarlo si OpenRouter lo descontinúa)
+# Modelo actual
 MODEL = "recursive/flint-v1.0:free"
 
 
@@ -42,12 +42,11 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
     You are an AI assistant for a pet care app. Extract task details from the user's text.
     Return ONLY a valid JSON object with these exact keys:
     - "description": (string) What the task is. Keep the pet's name in it.
-    - "time": (string) 24-hour format "HH:MM" (e.g., "07:00", "18:30").
+    - "time": (string) 24-hour format "HH:MM" (e.g., "07:00", "18:30"). If no time is found, use "12:00".
     - "frequency": (string) "once", "daily", or "weekly".
-    - "priority": (string) "high", "medium", or "low".
+    - "priority": (string) "high", "medium", or "low". If no priority is found, use "medium".
     - "pet_name": (string or null) One of these exact names: {known_pets}.
     
-    If you cannot find a time, default to "12:00". If you cannot find a priority, default to "medium".
     Do not include markdown formatting like ```json.
     """
 
@@ -70,25 +69,38 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
 
         data = json.loads(raw_json)
 
-        # Guardrail 2: Validar formato de hora estricto con Regex (evita alucinaciones como 25:00)
-        if not re.match(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", data.get("time", "")):
-            raise ValueError(f"Hora inválida generada por la IA: {data.get('time')}")
+        # --- ARREGLO AQUÍ ---
+        # En lugar de lanzar ValueError, forzamos el valor por defecto si la hora es inválida o falta.
+        time_val = data.get("time", "12:00")
+        if not re.match(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", str(time_val)):
+            print(f"[Guardrail] Hora inválida generada por la IA: {time_val}. Usando 12:00.")
+            time_val = "12:00"
+        # --------------------
 
         # Guardrail 3: Validar que la mascota exista en la base de datos del usuario
-        if data.get("pet_name") not in known_pets:
-            data["pet_name"] = None
+        pet_val = data.get("pet_name")
+        if pet_val not in known_pets:
+            pet_val = None
+
+        # Validar frecuencia y prioridad también para evitar datos basura
+        freq_val = data.get("frequency", "once")
+        if freq_val not in ["once", "daily", "weekly"]:
+            freq_val = "once"
+
+        prio_val = data.get("priority", "medium")
+        if prio_val not in ["high", "medium", "low"]:
+            prio_val = "medium"
 
         print("[Agentic AI] Tarea extraída por el LLM exitosamente.")
         return ParsedTask(
             description=data.get("description", "Task"),
-            time=data.get("time", "12:00"),
-            frequency=data.get("frequency", "once"),
-            priority=data.get("priority", "medium"),
-            pet_name=data.get("pet_name"),
+            time=time_val,
+            frequency=freq_val,
+            priority=prio_val,
+            pet_name=pet_val,
         )
 
     except Exception as e:  # noqa: BLE001
         # El Fallback: Si la API falla (404, 429, timeout, etc.), usa Regex y no rompe la app.
-        # Añadimos
         print(f"[Guardrail] Error en LLM ({e}). Usando parser Regex (Fallback).")
         return regex_parse_task(text, known_pets)

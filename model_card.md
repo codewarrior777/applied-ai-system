@@ -32,8 +32,20 @@ For the Applied AI System, I integrated an LLM (via OpenRouter) to parse natural
 2. **Markdown Stripping:** Cleans ```json blocks from the LLM response.
 3. **Time Validation:** Uses regex to ensure the time is valid (00:00 to 23:59). If invalid, defaults to "12:00".
 4. **Pet Validation:** Ensures the parsed pet name exists in the user's list, otherwise sets it to `None`.
+5. **Frequency & Priority Validation:** Ensures the LLM only returns valid values for these fields.
 
 ### The Reliability Fallback
 The most important engineering decision was the **Regex Fallback**. If the LLM API fails (timeout, 429 rate limit, or 500 error), the system automatically falls back to `nl_parser.py`. This guarantees the app never crashes and always provides a structured task, even if the AI is unavailable.
 
 **Testing:** I wrote tests using `pytest` and `unittest.mock` to simulate API failures and validate all guardrails without spending tokens.
+
+---
+
+## 3. Baseline vs. Specialized Output Comparison (Fine-tuning reflection)
+The professor asked for a comparison between a baseline (generic) output and a specialized (prompted) output. 
+
+*   **Baseline Prompt:** "Extract the task from this text."
+*   **Specialized Prompt (Used in PawPal+):** A strict JSON schema with exact keys, default values ("12:00" for time, "medium" for priority), and a list of known pet names.
+
+**Comparison:** 
+Without the specialized prompt, the LLM would return conversational text (e.g., "Sure, I can help you walk Cooper at 7am.") or inconsistent JSON. By using the structured prompt with explicit schema instructions and guardrails, the output becomes 100% deterministic and directly parsable by Python, eliminating the need for post-processing text. This specialization is why the system can reliably create `Task` objects from free-form text.

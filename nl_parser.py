@@ -14,8 +14,12 @@ Examples:
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import asdict, dataclass
+
+# Configurar logging
+logger = logging.getLogger(__name__)
 
 
 # ----------------------------------------------------------------------
@@ -173,7 +177,7 @@ def parse_task(text: str, known_pets: list[str] | None = None) -> ParsedTask:
     # --- ARREGLO AQUÍ ---
     # Si no se encuentra la hora, usamos "12:00" por defecto en lugar de romper la app.
     if time_str is None:
-        print(f"[Fallback] No se encontró hora en: {text!r}. Usando 12:00 por defecto.")
+        logger.warning(f"[Fallback] No se encontró hora en: {text!r}. Usando 12:00 por defecto.")
         time_str = "12:00"
     # --------------------
 

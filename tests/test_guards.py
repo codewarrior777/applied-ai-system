@@ -66,3 +66,16 @@ def test_llm_agent_guardrail_unknown_pet(mock_create):
     result = parse_task_with_llm("Feed UnknownPet", ["Prince", "Cooper"])
     # El guardrail debe anular el nombre de la mascota desconocida
     assert result.pet_name is None
+
+@patch("llm_agent.client.chat.completions.create")
+def test_llm_agent_guardrail_invalid_frequency_and_priority(mock_create):
+    """Verify Guardrail 4: The agent corrects invalid frequency and priority values."""
+    mock_response = MagicMock()
+    # Simulamos que el LLM devuelve valores que no están permitidos
+    mock_response.choices[0].message.content = '{"description": "Walk Cooper", "time": "10:00", "frequency": "every hour", "priority": "urgent", "pet_name": "Cooper"}'
+    mock_create.return_value = mock_response
+    
+    result = parse_task_with_llm("Walk Cooper every hour", ["Cooper"])
+    # Los guardrails deben corregirlos a los valores por defecto
+    assert result.frequency == "once"
+    assert result.priority == "medium"

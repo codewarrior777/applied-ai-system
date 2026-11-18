@@ -35,7 +35,7 @@ def parse_task_endpoint(request: ParseRequest):
     except ValueError as e:
         # Atrapamos errores específicos de parseo (validación de datos)
         raise HTTPException(status_code=422, detail=str(e)) from e
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         # Atrapamos cualquier otro error inesperado (ej. caída de red)
         raise HTTPException(status_code=500, detail=str(e)) from e
 

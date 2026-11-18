@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
 from llm_agent import parse_task_with_llm
-from nl_parser import ParsedTask
 
 app = FastAPI(title="PawPal+ AI API")
 

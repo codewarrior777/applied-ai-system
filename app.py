@@ -16,6 +16,7 @@ from datetime import date
 import streamlit as st
 from dotenv import load_dotenv
 
+from llm_agent import parse_task_with_llm
 from pawpal_system import Owner, Pet, Scheduler, Task
 
 # Cargar variables de entorno (OPENROUTER_API_KEY)
@@ -127,6 +128,8 @@ def main() -> None:
             TypeError,
             ValueError,
         ) as e:
+            st.sidebar.error(f"Could not read file: {e}")
+        except Exception as e:  # noqa: BLE001
             st.sidebar.error(f"Could not read file: {e}")
 
     # ---- Dashboard stats ----
@@ -296,8 +299,6 @@ def main() -> None:
             else:
                 try:
                     # Usamos el nuevo Agente de IA con Guardrails
-                    from llm_agent import parse_task_with_llm
-
                     known_pets = [p.name for p in owner.pets]
                     parsed = parse_task_with_llm(nl_text, known_pets)
                     st.session_state.ai_parsed = parsed

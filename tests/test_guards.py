@@ -1,7 +1,7 @@
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from llm_agent import parse_task_with_llm
-from nl_parser import parse_task, ParsedTask
+from nl_parser import ParsedTask, parse_task
 
 # --- TESTS PARA EL REGEX FALLBACK (nl_parser.py) ---
 

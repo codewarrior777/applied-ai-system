@@ -22,12 +22,6 @@ logger = logging.getLogger(__name__)
 # Ensure environment variables (.env) are loaded
 load_dotenv()
 
-# OpenRouter client configuration
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY", ""),
-)
-
 # Current model
 MODEL = "recursive/flint-v1.0:free"
 
@@ -40,6 +34,12 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
     if not api_key or api_key.strip() == "" or api_key == "dummy_key":
         logger.warning("[Guardrail] API Key not found. Using Regex parser.")
         return regex_parse_task(text, known_pets)
+
+    # Initialize the client HERE, so it doesn't crash on import
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=api_key,
+    )
 
     system_prompt = f"""
     You are an AI assistant for a pet care app. Extract task details from the user's text.

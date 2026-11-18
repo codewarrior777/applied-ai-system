@@ -24,10 +24,21 @@ load_dotenv()
 
 
 def local_css():
-    """Inject custom Cyberpunk CSS with high specificity."""
+    """Inject custom Cyberpunk CSS with high specificity and larger text."""
     st.markdown(
         """
     <style>
+    /* Aumentar tamaño de fuente general */
+    html, body, [class*="css"] {
+        font-size: 18px !important;
+    }
+    .stMarkdown p, .stTextInput label, .stSelectbox label {
+        font-size: 1.1rem !important;
+    }
+    h1 { font-size: 2.8rem !important; }
+    h2 { font-size: 2.2rem !important; }
+    h3 { font-size: 1.8rem !important; }
+
     /* Background */
     .stApp {
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
@@ -58,6 +69,7 @@ def local_css():
         color: #00ffff !important;
         background-color: transparent !important;
         border-radius: 5px !important;
+        font-size: 1.1rem !important;
     }
     div[data-testid="stButton"] > button:hover {
         background-color: #00ffff !important;
@@ -69,6 +81,7 @@ def local_css():
     button[data-baseweb="tab"] {
         color: #00ffff !important;
         border-bottom: 2px solid transparent !important;
+        font-size: 1.2rem !important;
     }
     button[data-baseweb="tab"][aria-selected="true"] {
         color: #ff00ff !important;
@@ -89,12 +102,14 @@ def local_css():
         background-color: #1a1a2e !important;
         color: #00ffff !important;
         border: 1px solid #302b63 !important;
+        font-size: 1.1rem !important;
     }
     
     /* Alerts */
     .stAlert {
         background-color: #1a1a2e !important;
         border: 1px solid #ff00ff !important;
+        font-size: 1.1rem !important;
     }
     </style>
     """,

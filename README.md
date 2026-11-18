@@ -46,7 +46,7 @@ For this Capstone, the original Regex-based parser was upgraded to an **AI Agent
 1. **The Agent:** When you type a task (e.g., *"Take Cooper for a walk at 6:30pm daily, it's urgent"*), the app sends it to a free LLM via **OpenRouter**.
 2. **The JSON Parser:** The LLM is strictly prompted to return a structured JSON object (description, time, frequency, priority, pet_name).
 3. **The Guardrails:** To make this "production-ready", we built three layers of safety:
-   - **Markdown Stripping:** Cleans any accidental ` ```json ` formatting the LLM adds.
+   - **Markdown Stripping:** Cleans any accidental formatting the LLM adds.
    - **Strict Time Validation:** A Python Regex checks the LLM's output to ensure the time is a valid `HH:MM` format. It rejects hallucinations like "25:00".
    - **Hallucination Check:** Ensures the pet name extracted by the AI actually exists in the user's database.
 
@@ -88,9 +88,8 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1   # Windows PowerShell
 # source .venv/bin/activate     # macOS / Linux
 
-# Install dependencies
+# Install dependencies (includes openai, python-dotenv, etc.)
 pip install -r requirements.txt
-pip install openai python-dotenv
 Environment Variables
 You must provide an OpenRouter API key to enable the AI Agent.
 Create a .env file in the root directory:
@@ -106,14 +105,13 @@ Run the FastAPI REST API
 bash
 uvicorn api:app --reload
 # Swagger docs at http://127.0.0.1:8000/docs
-Run the tests (100% Coverage on Domain)
+Run the tests
 bash
 python -m pytest -v
 📋 Sample Input / Output (Demonstration)
 Here are examples of the system handling various inputs end-to-end, using the AI Agent with Guardrails:
 
 Example 1: Natural Language with Priority
-
 Input: "Take Cooper for a walk at 6:30pm daily, it's urgent"
 
 Agent Output:
@@ -127,7 +125,6 @@ json
   "pet_name": "Cooper"
 }
 Example 2: Missing Time (Defaults used)
-
 Input: "Feed Prince"
 
 Agent Output:
@@ -141,7 +138,6 @@ json
   "pet_name": "Prince"
 }
 Example 3: The Guardrail / Fallback in Action
-
 Input: "Give the dog a bath" (Simulating an API outage)
 
 Agent Output (API Failed): Because the external LLM API was down, the system caught the error and used the Regex fallback to successfully output the data without crashing the app:
@@ -171,7 +167,7 @@ Session-Only Data: User pet data is never stored on the server; it lives in the 
 No Hallucinations: The LLM cannot invent new pets, nor can it schedule tasks at impossible times (e.g., "25:00").
 
 🧪 Test Results & CI
-28 tests, 100% coverage on the core domain logic (pawpal_system.py).
+20 tests, 100% coverage on the core domain logic (pawpal_system.py).
 
 Continuous Integration: GitHub Actions runs pytest and ruff check on every push to ensure the AI integration didn't break the core logic.
 
@@ -182,7 +178,7 @@ applied-ai-system/
 │   ├── class_diagram.md       # OOP Class structure (Mermaid)
 │   └── architecture.mmd       # AI Workflow data flow (Mermaid)
 ├── .github/workflows/         # CI: pytest + ruff
-├── tests/                     # 28 passing tests
+├── tests/                     # 20 passing tests
 ├── app.py                     # Streamlit UI (uses LLM Agent)
 ├── api.py                     # FastAPI endpoints (uses LLM Agent)
 ├── llm_agent.py               # THE AI AGENT (OpenRouter + Guardrails)
@@ -195,7 +191,7 @@ Built by Gustavo Ramos for the Applied AI System Capstone.
 
 Role	Lead architect · Solo developer
 Architecture	AI Agent + Fallback · 2 Mermaid diagrams
-Quality	28 tests · 100% core coverage · CI Green
+Quality	20 tests · 100% core coverage · CI Green
 AI Stack	OpenRouter (LLM) · Python Regex (Guardrail)
 Standards	PEP 8 · Conventional Commits
 "The true test of an AI system is not how it performs when the API works, but how it behaves when the API fails."

@@ -49,13 +49,24 @@ The most important engineering decision was the **Regex Fallback**. If the LLM A
 
 ## 3. Baseline vs. Specialized Output Comparison (Fine-tuning reflection)
 
-The professor asked for a comparison between a baseline (generic) output and a specialized (prompted) output.
+To measure the impact of the specialized prompt, we can execute a direct comparison between the original deterministic parser (Baseline) and the LLM Agent (Specialized). This comparison is embedded in `evaluate.py` (`run_baseline_comparison()`) to provide measurable evidence.
 
-- **Baseline Prompt:** "Extract the task from this text."
-- **Specialized Prompt (Used in PawPal+):** A strict JSON schema with exact keys, default values ("12:00" for time, "medium" for priority), and a list of known pet names.
+**Test Input:** `"Give the dog a bath tomorrow morning"`
 
-**Comparison:**
-Without the specialized prompt, the LLM would return conversational text (e.g., "Sure, I can help you walk Cooper at 7am.") or inconsistent JSON. By using the structured prompt with explicit schema instructions and guardrails, the output becomes highly reliable and directly parsable by Python. While the AI generation itself is stochastic, the deterministic guardrails ensure the final task object is always valid. This specialization is why the system can reliably create `Task` objects from free-form text.
+**Baseline Output (Regex Parser):**
+- **Description:** "Give the dog a bath"
+- **Time:** `12:00` *(Defaulted. The regex cannot understand "tomorrow morning")*
+- **Priority:** `medium` *(Defaulted)*
+- **Pet Name:** `None` *(Failed to extract implicit pet)*
+
+**Specialized Output (LLM Agent):**
+- **Description:** "Give the dog a bath"
+- **Time:** `09:00` *(Inferred from the temporal context of "morning")*
+- **Priority:** `medium` *(Defaulted)*
+- **Pet Name:** `None` *(The LLM correctly identifies the subject, but the Guardrail sets it to None because "dog" is not in the known_pets list)*
+
+**Measurable Difference:** 
+The baseline fails on implicit temporal context. The specialized LLM successfully infers missing data (times), while the deterministic guardrails guarantee that the output remains valid Python data, even if the LLM extracts an unknown pet name. Running `python evaluate.py` prints this side-by-side comparison to prove the value of the AI specialization.
 
 ---
 

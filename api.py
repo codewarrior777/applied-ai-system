@@ -17,6 +17,8 @@ class ParseResponse(BaseModel):
     frequency: str
     priority: str
     pet_name: str | None
+    # NUEVO: Agregamos el campo source a la respuesta de la API
+    source: str
 
 
 @app.post("/api/parse-task", response_model=ParseResponse)
@@ -29,9 +31,15 @@ def parse_task_endpoint(request: ParseRequest):
         raise HTTPException(status_code=400, detail="El texto no puede estar vacío.")
 
     try:
-        # Aquí llamamos al AGENTE (no al parser directo)
-        parsed = parse_task_with_llm(request.text, request.known_pets)
-        return ParseResponse(**parsed.to_dict())
+        # 👇 AQUÍ ESTÁ EL CAMBIO: Desempaquetamos la tupla
+        parsed, source = parse_task_with_llm(request.text, request.known_pets)
+        
+        # Convertimos a diccionario, le inyectamos el source, y lo devolvemos
+        response_data = parsed.to_dict()
+        response_data["source"] = source
+        
+        return ParseResponse(**response_data)
+        
     except ValueError as e:
         # Atrapamos errores específicos de parseo (validación de datos)
         raise HTTPException(status_code=422, detail=str(e)) from e

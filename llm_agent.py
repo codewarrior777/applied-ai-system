@@ -41,8 +41,12 @@ def _get_pet_context(known_pets: list[str]) -> str:
     return context
 
 
-def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
-    """AI Agent with Guardrails, Fallback, Agent Trace, and RAG."""
+def parse_task_with_llm(text: str, known_pets: list[str]) -> tuple[ParsedTask, str]:
+    """AI Agent with Guardrails, Fallback, Agent Trace, and RAG.
+    
+    Returns:
+        tuple[ParsedTask, str]: The parsed task and the source ("llm" or "fallback").
+    """
 
     # [AGENT TRACE] Step 0: Input Analysis
     logger.info(f"[Agent Trace] Step 0: Received input '{text}' for pets: {known_pets}")
@@ -51,7 +55,8 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key or api_key.strip() == "" or api_key == "dummy_key":
         logger.warning("[Guardrail] API Key not found. Using Regex parser.")
-        return regex_parse_task(text, known_pets)
+        # 👇 AQUÍ AGREGAMOS EL ORIGEN "fallback"
+        return regex_parse_task(text, known_pets), "fallback"
 
     # Initialize the client HERE, so it doesn't crash on import
     client = OpenAI(
@@ -128,15 +133,22 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
 
         # [AGENT TRACE] Step 4: Final Output
         logger.info("[Agent Trace] Step 4: Task successfully validated and returned.")
-        return ParsedTask(
-            description=data.get("description", "Task"),
-            time=time_val,
-            frequency=freq_val,
-            priority=prio_val,
-            pet_name=pet_val,
+        
+        # 👇 AQUÍ AGREGAMOS EL ORIGEN "llm"
+        return (
+            ParsedTask(
+                description=data.get("description", "Task"),
+                time=time_val,
+                frequency=freq_val,
+                priority=prio_val,
+                pet_name=pet_val,
+            ),
+            "llm",
         )
 
     except Exception as e:  # noqa: BLE001
         # Fallback: If the API fails (404, 429, timeout, etc.), use Regex and don't crash.
         logger.error(f"[Guardrail] LLM error ({e}). Using Regex parser (Fallback).")
-        return regex_parse_task(text, known_pets)
+        
+        # 👇 AQUÍ AGREGAMOS EL ORIGEN "fallback"
+        return regex_parse_task(text, known_pets), "fallback"

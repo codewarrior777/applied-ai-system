@@ -36,6 +36,9 @@ def _init_session() -> None:
         st.session_state.scheduler = Scheduler()
     if "ai_parsed" not in st.session_state:
         st.session_state.ai_parsed = None
+    # NUEVO: Guardamos también la fuente (llm o fallback)
+    if "ai_source" not in st.session_state:
+        st.session_state.ai_source = None
 
 
 def main() -> None:
@@ -96,6 +99,7 @@ def main() -> None:
         st.session_state.owner = Owner(name="New User")
         st.session_state.scheduler = Scheduler()
         st.session_state.ai_parsed = None
+        st.session_state.ai_source = None
         st.rerun()
 
     # ---- Session-scoped persistence ----
@@ -278,6 +282,8 @@ def main() -> None:
 
         if "ai_parsed" not in st.session_state:
             st.session_state.ai_parsed = None
+        if "ai_source" not in st.session_state:
+            st.session_state.ai_source = None
 
         nl_text = st.text_input(
             "Describe your task:",
@@ -291,6 +297,7 @@ def main() -> None:
         with col2:
             if st.button("✖ Clear"):
                 st.session_state.ai_parsed = None
+                st.session_state.ai_source = None
                 st.rerun()
 
         if parse_btn:
@@ -300,16 +307,27 @@ def main() -> None:
                 try:
                     # Usamos el nuevo Agente de IA con Guardrails
                     known_pets = [p.name for p in owner.pets]
-                    parsed = parse_task_with_llm(nl_text, known_pets)
+                    # 👇 AQUÍ ESTÁ EL CAMBIO: Desempaquetamos la tupla
+                    parsed, source = parse_task_with_llm(nl_text, known_pets)
                     st.session_state.ai_parsed = parsed
+                    st.session_state.ai_source = source
                 except ValueError as e:
                     st.session_state.ai_parsed = None
+                    st.session_state.ai_source = None
                     st.error(f"Could not parse: {e}")
 
         parsed = st.session_state.ai_parsed
+        source = st.session_state.ai_source
+        
         if parsed is not None:
             st.markdown("---")
             st.subheader("📋 Preview")
+            
+            # 👇 NUEVO: Mostramos al usuario si se usó el LLM o el Fallback
+            if source == "fallback":
+                st.warning("⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely.")
+            else:
+                st.success("✨ **Parsed successfully by the AI Agent.**")
 
             col_a, col_b = st.columns(2)
             col_a.metric("Time", parsed.time)
@@ -354,6 +372,7 @@ def main() -> None:
                             f"({parsed.priority} priority, {parsed.frequency})"
                         )
                         st.session_state.ai_parsed = None
+                        st.session_state.ai_source = None
                         st.balloons()
             else:
                 st.warning(

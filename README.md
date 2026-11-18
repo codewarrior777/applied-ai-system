@@ -1,5 +1,4 @@
 # 🐾 PawPal+ — Applied AI System
-
 <p align="center">
   <img src="assets/applied_AI_system_hud.png" alt="PawPal+ Cyberpunk UI" width="800">
 </p>

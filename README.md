@@ -224,7 +224,7 @@ curl -X POST http://127.0.0.1:8000/api/parse-task \
 
 ## 🧪 Test Results & CI
 
-- **Domain Logic:** 100% coverage on the core domain logic (`pawpal_system.py`).
+- **Test Suite:** 36 passing tests with 100% coverage on the core domain logic (`pawpal_system.py`).
 - **CI Pipeline:** Continuous Integration via GitHub Actions runs `pytest` and `ruff check` on every push to ensure the AI integration didn't break the core logic.
 
 ---
@@ -237,7 +237,7 @@ applied-ai-system/
 │   ├── class_diagram.md       # OOP Class structure (Mermaid)
 │   └── architecture.md        # AI Workflow data flow (Mermaid)
 ├── .github/workflows/         # CI: pytest + ruff
-├── tests/                     # 20 passing tests
+├── tests/                     # 36 passing tests
 ├── app.py                     # Streamlit UI (uses LLM Agent)
 ├── api.py                     # FastAPI endpoints (uses LLM Agent)
 ├── evaluate.py                # Evaluation Harness (Stretch Goal)

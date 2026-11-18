@@ -7,3 +7,4 @@ ruff>=0.6
 fastapi
 uvicorn
 python-dotenv
+openai

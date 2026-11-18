@@ -17,34 +17,34 @@ class ParseResponse(BaseModel):
     frequency: str
     priority: str
     pet_name: str | None
-    # NUEVO: Agregamos el campo source a la respuesta de la API
+    # NEW: Include the source field to track observability
     source: str
 
 
 @app.post("/api/parse-task", response_model=ParseResponse)
 def parse_task_endpoint(request: ParseRequest):
     """
-    Endpoint que recibe texto natural y devuelve una tarea estructurada
-    usando el Agente de IA (con fallback a Regex).
+    Endpoint that receives natural language text and returns a structured task
+    using the AI Agent (with Regex fallback).
     """
     if not request.text.strip():
-        raise HTTPException(status_code=400, detail="El texto no puede estar vacío.")
+        raise HTTPException(status_code=400, detail="Text cannot be empty.")
 
     try:
-        # 👇 AQUÍ ESTÁ EL CAMBIO: Desempaquetamos la tupla
+        # Unpack the tuple returned by the agent (task, source)
         parsed, source = parse_task_with_llm(request.text, request.known_pets)
         
-        # Convertimos a diccionario, le inyectamos el source, y lo devolvemos
+        # Convert to dictionary, inject the source, and return
         response_data = parsed.to_dict()
         response_data["source"] = source
         
         return ParseResponse(**response_data)
         
     except ValueError as e:
-        # Atrapamos errores específicos de parseo (validación de datos)
+        # Catch specific parsing errors (data validation)
         raise HTTPException(status_code=422, detail=str(e)) from e
     except Exception as e:
-        # Atrapamos cualquier otro error inesperado (ej. caída de red)
+        # Catch any other unexpected errors (e.g., network failure)
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 

@@ -55,4 +55,20 @@ The professor asked for a comparison between a baseline (generic) output and a s
 - **Specialized Prompt (Used in PawPal+):** A strict JSON schema with exact keys, default values ("12:00" for time, "medium" for priority), and a list of known pet names.
 
 **Comparison:**
-Without the specialized prompt, the LLM would return conversational text (e.g., "Sure, I can help you walk Cooper at 7am.") or inconsistent JSON. By using the structured prompt with explicit schema instructions and guardrails, the output becomes 100% deterministic and directly parsable by Python, eliminating the need for post-processing text. This specialization is why the system can reliably create `Task` objects from free-form text.
+Without the specialized prompt, the LLM would return conversational text (e.g., "Sure, I can help you walk Cooper at 7am.") or inconsistent JSON. By using the structured prompt with explicit schema instructions and guardrails, the output becomes highly reliable and directly parsable by Python. While the AI generation itself is stochastic, the deterministic guardrails ensure the final task object is always valid. This specialization is why the system can reliably create `Task` objects from free-form text.
+
+---
+
+## 4. Limitations, Misuse, and Biases
+
+**Limitations:**
+- **Latency & Availability:** The system depends on the OpenRouter API. While the Regex fallback ensures high availability, it lacks the nuanced understanding of the LLM (e.g., it cannot understand complex phrasing like "give the dog a bath" without explicit time or pet names).
+- **Context Window:** The RAG retrieval is currently limited to a local JSON file. In a production environment, this would need to scale to a vector database to handle hundreds of pets and complex medical histories.
+
+**Misuse:**
+- **Prompt Injection:** A malicious user could attempt to inject system prompts to bypass the guardrails. To mitigate this, the system uses strict JSON parsing and deterministic validation (regex for time) rather than trusting the LLM's output blindly.
+- **Data Privacy:** Because the public demo uses session-only storage (`st.session_state`), there is no risk of cross-user data leakage. However, users are warned not to enter sensitive personal information.
+
+**Biases:**
+- **Language Bias:** The LLM (Llama-3-8B) is predominantly trained on English text. Non-English inputs or regional slang (e.g., "walk the pup" vs "take the dog out") might be parsed with lower accuracy, falling back to the Regex parser more often.
+- **Species Bias:** The prompt is optimized for common pets (dogs and cats). Unusual pets (e.g., reptiles with specific temperature schedules) might not be parsed as accurately without further fine-tuning.

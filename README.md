@@ -1,5 +1,5 @@
 # 🐾 PawPal+ — Applied AI System
-
+![PawPal+ UI Preview](assets/applied_AI_system_hud.png)
 [![Live Demo](https://img.shields.io/badge/demo-LIVE-brightgreen?style=for-the-badge&logo=streamlit)](https://pawpal-plus-esqzqdlgrnnjsezv6a7r4f.streamlit.app)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/codewarrior777/applied-ai-system/actions)
 [![Lint](https://img.shields.io/badge/lint-passing-brightgreen)](https://github.com/codewarrior777/applied-ai-system/actions)

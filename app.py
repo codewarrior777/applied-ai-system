@@ -1,4 +1,4 @@
-"""Streamlit UI for PawPal+ — Cyberpunk Edition.
+"""Streamlit UI for PawPal+ — Cyberpunk Edition (Refined).
 
 SECURITY NOTE:
     This is a public demo. User data is scoped to the browser session
@@ -24,45 +24,48 @@ load_dotenv()
 
 
 def local_css():
-    """Inject custom Cyberpunk CSS optimized for wide layouts and Zoom."""
+    """Inject custom Cyberpunk CSS (Refined for readability)."""
     st.markdown(
         """
     <style>
     /* General Font Sizes */
     html, body, [class*="css"] {
         font-size: 18px !important;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
     }
-    .stMarkdown p, .stTextInput label, .stSelectbox label {
+    
+    /* Textos legibles (Blanco/Gris claro para alto contraste) */
+    .stMarkdown p, .stTextInput label, .stSelectbox label, p, li {
+        color: #e0e0e0 !important; 
         font-size: 1.1rem !important;
     }
-    h1 { font-size: 3.2rem !important; font-weight: bold !important; }
-    h2 { font-size: 2.4rem !important; font-weight: bold !important; }
-    h3 { font-size: 1.8rem !important; font-weight: bold !important; }
 
     /* Background */
     .stApp {
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
     }
     
-    /* 🚀 ESTRUCTURA: Expandir el ancho del contenedor principal */
+    /* Expandir el ancho del contenedor principal */
     .block-container {
-        max-width: 95% !important; /* Ocupa casi toda la pantalla */
+        max-width: 95% !important; 
         padding-top: 2rem !important;
         padding-bottom: 3rem !important;
     }
 
-    /* Headers */
+    /* Headers con brillo sutil */
     h1, h2, h3 {
-        color: #ff00ff !important;
-        text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff !important;
+        color: #ffffff !important;
+        text-shadow: 0 0 8px rgba(255, 0, 255, 0.6) !important;
         letter-spacing: 1px !important;
     }
-    
+    h1 { font-size: 3.2rem !important; font-weight: 700 !important; }
+    h2 { font-size: 2.4rem !important; font-weight: 600 !important; }
+    h3 { font-size: 1.8rem !important; font-weight: 600 !important; }
+
     /* Sidebar */
     [data-testid="stSidebar"] {
         background-color: #0a0a1a !important;
-        border-right: 2px solid #00ffff !important;
-        box-shadow: 0 0 20px rgba(0, 255, 255, 0.2) !important;
+        border-right: 1px solid #00ffff !important;
     }
     [data-testid="stSidebar"] .block-container {
         padding: 2rem 1rem !important;
@@ -71,60 +74,60 @@ def local_css():
     /* Buttons */
     div[data-testid="stButton"] > button {
         border: 1px solid #00ffff !important;
-        box-shadow: 0 0 8px #00ffff !important;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.4) !important;
         color: #00ffff !important;
         background-color: rgba(0, 255, 255, 0.05) !important;
-        border-radius: 5px !important;
-        font-size: 1.1rem !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
         transition: all 0.3s ease !important;
     }
     div[data-testid="stButton"] > button:hover {
         background-color: #00ffff !important;
-        color: #0f0c29 !important;
-        box-shadow: 0 0 20px #00ffff !important;
+        color: #0a0a1a !important;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.8) !important;
     }
     
     /* Tabs */
     button[data-baseweb="tab"] {
-        color: #00ffff !important;
+        color: #e0e0e0 !important;
         border-bottom: 2px solid transparent !important;
         font-size: 1.2rem !important;
         padding: 10px 20px !important;
-        transition: all 0.3s ease !important;
     }
     button[data-baseweb="tab"][aria-selected="true"] {
         color: #ff00ff !important;
         border-bottom: 3px solid #ff00ff !important;
-        text-shadow: 0 0 8px #ff00ff !important;
-        background-color: rgba(255, 0, 255, 0.05) !important;
+        text-shadow: 0 0 5px rgba(255, 0, 255, 0.5) !important;
     }
     
-    /* Forms (Glowing Container) */
+    /* Forms */
     [data-testid="stForm"] {
-        border: 1px solid #00ffff !important;
-        box-shadow: 0 0 15px rgba(0, 255, 255, 0.3) !important;
-        border-radius: 10px !important;
+        border: 1px solid rgba(0, 255, 255, 0.5) !important;
+        box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
         padding: 25px !important;
-        background-color: rgba(10, 10, 26, 0.6) !important;
+        background-color: rgba(10, 10, 26, 0.7) !important;
+        backdrop-filter: blur(10px) !important;
     }
 
     /* Inputs */
     .stTextInput>div>div>input, .stSelectbox>div>div>div, .stNumberInput>div>div>input {
         background-color: #1a1a2e !important;
-        color: #00ffff !important;
+        color: #ffffff !important;
         border: 1px solid #302b63 !important;
         font-size: 1.1rem !important;
-        border-radius: 5px !important;
+        border-radius: 6px !important;
     }
     .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus {
-        border-color: #ff00ff !important;
-        box-shadow: 0 0 10px #ff00ff !important;
+        border-color: #00ffff !important;
+        box-shadow: 0 0 8px rgba(0, 255, 255, 0.5) !important;
     }
     
-    /* Alerts & Info boxes */
+    /* Alerts */
     .stAlert {
         background-color: #1a1a2e !important;
         border: 1px solid #ff00ff !important;
+        color: #e0e0e0 !important;
         font-size: 1.1rem !important;
         border-radius: 8px !important;
     }
@@ -132,7 +135,7 @@ def local_css():
     /* Metrics */
     [data-testid="stMetricValue"] {
         color: #00ffff !important;
-        text-shadow: 0 0 10px #00ffff !important;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.5) !important;
         font-size: 2rem !important;
     }
     </style>

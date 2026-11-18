@@ -1,4 +1,4 @@
-"""Streamlit UI for PawPal+ — the smart pet care management system.
+"""Streamlit UI for PawPal+ — Cyberpunk Edition.
 
 SECURITY NOTE:
     This is a public demo. User data is scoped to the browser session
@@ -23,6 +23,88 @@ from pawpal_system import Owner, Pet, Scheduler, Task
 load_dotenv()
 
 
+def local_css():
+    """Inject custom Cyberpunk CSS."""
+    st.markdown(
+        """
+    <style>
+    /* Main Background */
+    .stApp {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        color: #00ffff;
+    }
+    
+    /* Headers */
+    h1, h2, h3 {
+        color: #ff00ff !important;
+        text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+        font-family: 'Courier New', monospace;
+    }
+    
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #0a0a1a;
+        border-right: 2px solid #00ffff;
+    }
+    
+    /* Buttons */
+    .stButton>button {
+        background-color: transparent;
+        color: #00ffff;
+        border: 2px solid #00ffff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px #00ffff;
+        transition: all 0.3s ease;
+        font-weight: bold;
+    }
+    .stButton>button:hover {
+        background-color: #00ffff;
+        color: #0f0c29;
+        box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: transparent;
+        color: #ff00ff;
+        border: 1px solid #ff00ff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px #ff00ff;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #ff00ff !important;
+        color: #0f0c29 !important;
+        box-shadow: 0 0 15px #ff00ff !important;
+    }
+    
+    /* Inputs */
+    .stTextInput>div>div>input, .stSelectbox>div>div>div {
+        background-color: #1a1a2e;
+        color: #00ffff;
+        border: 1px solid #00ffff;
+    }
+    
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        color: #00ffff;
+        text-shadow: 0 0 10px #00ffff;
+    }
+    
+    /* Warnings / Success */
+    .stAlert {
+        background-color: #1a1a2e;
+        border: 1px solid #ff00ff;
+        color: #00ffff;
+    }
+    </style>
+    """,
+        unsafe_allow_html=True,
+    )
+
+
 def _is_onboarded(owner: Owner) -> bool:
     """Return True if the owner has completed onboarding (name is set)."""
     return bool(owner.name and owner.name.strip() and owner.name != "New User")
@@ -36,21 +118,25 @@ def _init_session() -> None:
         st.session_state.scheduler = Scheduler()
     if "ai_parsed" not in st.session_state:
         st.session_state.ai_parsed = None
-    # NEW: Store the source of the parsed task ("llm" or "fallback")
     if "ai_source" not in st.session_state:
         st.session_state.ai_source = None
 
 
 def main() -> None:
-    st.set_page_config(page_title="PawPal+", page_icon="🐾")
+    st.set_page_config(
+        page_title="PawPal+ | Cyberpunk AI",
+        page_icon="🐾",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
 
+    local_css()
     _init_session()
+    
     owner: Owner = st.session_state.owner
     scheduler: Scheduler = st.session_state.scheduler
 
-    # ------------------------------------------------------------------
     # SECURITY DISCLAIMER
-    # ------------------------------------------------------------------
     st.warning(
         "⚠️ **Public demo** — Your data lives in this browser session only "
         "and is **NOT stored on the server**. You can download it manually. "
@@ -58,9 +144,7 @@ def main() -> None:
         icon="🔒",
     )
 
-    # ------------------------------------------------------------------
     # First-run onboarding
-    # ------------------------------------------------------------------
     if not _is_onboarded(owner):
         st.title("🐾 Welcome to PawPal+")
         st.caption("Smart Pet Care Management System")
@@ -79,9 +163,7 @@ def main() -> None:
 
         st.stop()
 
-    # ------------------------------------------------------------------
     # Main app
-    # ------------------------------------------------------------------
     st.title(f"🐾 PawPal+ — Welcome, {owner.name}!")
     st.caption("Smart Pet Care Management System")
 
@@ -125,14 +207,6 @@ def main() -> None:
             st.session_state.owner = Owner.from_dict(data)
             st.sidebar.success(f"Restored {len(data.get('pets', []))} pet(s)")
             st.rerun()
-        except (
-            json.JSONDecodeError,
-            UnicodeDecodeError,
-            KeyError,
-            TypeError,
-            ValueError,
-        ) as e:
-            st.sidebar.error(f"Could not read file: {e}")
         except Exception as e:  # noqa: BLE001
             st.sidebar.error(f"Could not read file: {e}")
 
@@ -180,16 +254,12 @@ def main() -> None:
     else:
         st.sidebar.info("No pets registered yet.")
 
-    # ------------------------------------------------------------------
     # Main UI Tabs
-    # ------------------------------------------------------------------
     tab_pet, tab_task, tab_ai, tab_schedule = st.tabs(
         ["🐶 Add Pet", "📝 Add Task", "🪄 AI Assistant", "📅 Today's Schedule"]
     )
 
-    # ------------------------------------------------------------------
     # TAB 1: Add Pet
-    # ------------------------------------------------------------------
     with tab_pet:
         st.subheader("Add a New Pet")
         with st.form("add_pet_form", clear_on_submit=True):
@@ -220,9 +290,7 @@ def main() -> None:
         else:
             st.info("No pets added yet. Use the form above to add your first pet!")
 
-    # ------------------------------------------------------------------
     # TAB 2: Add Task (manual)
-    # ------------------------------------------------------------------
     with tab_task:
         st.subheader("Add a Task for a Pet")
         if not owner.pets:
@@ -264,9 +332,7 @@ def main() -> None:
                     else:
                         st.error("Please enter a task description.")
 
-    # ------------------------------------------------------------------
-    # TAB 3: AI Assistant — Natural Language Parsing (LLM Agent)
-    # ------------------------------------------------------------------
+    # TAB 3: AI Assistant
     with tab_ai:
         st.subheader("🪄 AI Task Assistant")
         st.write(
@@ -305,9 +371,7 @@ def main() -> None:
                 st.error("Please enter some text first.")
             else:
                 try:
-                    # Call the AI Agent (with Guardrails)
                     known_pets = [p.name for p in owner.pets]
-                    # Unpack the tuple returned by the agent
                     parsed, source = parse_task_with_llm(nl_text, known_pets)
                     st.session_state.ai_parsed = parsed
                     st.session_state.ai_source = source
@@ -318,14 +382,16 @@ def main() -> None:
 
         parsed = st.session_state.ai_parsed
         source = st.session_state.ai_source
-        
+
         if parsed is not None:
             st.markdown("---")
             st.subheader("📋 Preview")
-            
-            # Show the user if the LLM succeeded or if the Fallback was triggered
+
             if source == "fallback":
-                st.warning("⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely.")
+                st.warning(
+                    "⚠️ **Note:** The AI API is currently unavailable. We used the "
+                    "deterministic Regex parser to ensure your task was processed safely."
+                )
             else:
                 st.success("✨ **Parsed successfully by the AI Agent.**")
 
@@ -380,9 +446,7 @@ def main() -> None:
                     "Go to the '🐶 Add Pet' tab first."
                 )
 
-    # ------------------------------------------------------------------
     # TAB 4: Today's Schedule
-    # ------------------------------------------------------------------
     with tab_schedule:
         st.subheader("Today's Care Schedule")
         all_tasks = owner.get_all_tasks()

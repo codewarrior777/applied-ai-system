@@ -77,7 +77,9 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
         # Guardrail 2: Validar hora
         time_val = data.get("time", "12:00")
         if not re.match(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", str(time_val)):
-            logger.warning(f"[Guardrail] Hora inválida generada por la IA: {time_val}. Usando 12:00.")
+            logger.warning(
+                f"[Guardrail] Hora inválida generada por la IA: {time_val}. Usando 12:00."
+            )
             time_val = "12:00"
 
         # Guardrail 3: Validar mascota

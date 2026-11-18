@@ -177,7 +177,9 @@ def parse_task(text: str, known_pets: list[str] | None = None) -> ParsedTask:
     # --- ARREGLO AQUÍ ---
     # Si no se encuentra la hora, usamos "12:00" por defecto en lugar de romper la app.
     if time_str is None:
-        logger.warning(f"[Fallback] No se encontró hora en: {text!r}. Usando 12:00 por defecto.")
+        logger.warning(
+            f"[Fallback] No se encontró hora en: {text!r}. Usando 12:00 por defecto."
+        )
         time_str = "12:00"
     # --------------------
 
@@ -207,7 +209,7 @@ if __name__ == "__main__":
         ("vet visit for Prince at 2pm next week", ["Cooper", "Prince"]),
         ("playtime with Cooper at 3:15pm, low priority", ["Cooper"]),
         ("Morning grooming at 09:00", []),
-        ("Feed Prince", ["Prince"]), # Prueba del fallback
+        ("Feed Prince", ["Prince"]),  # Prueba del fallback
     ]
 
     print("=" * 70)

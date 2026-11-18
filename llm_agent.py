@@ -100,7 +100,9 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
         data = json.loads(raw_json)
 
         # [AGENT TRACE] Step 3: Deterministic Validation
-        logger.info("[Agent Trace] Step 3: Running deterministic guardrail validations.")
+        logger.info(
+            "[Agent Trace] Step 3: Running deterministic guardrail validations."
+        )
 
         # Guardrail 2: Validate time
         time_val = data.get("time", "12:00")

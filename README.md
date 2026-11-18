@@ -1,5 +1,9 @@
 # 🐾 PawPal+ — Applied AI System
-![PawPal+ UI Preview](assets/applied_AI_system_hud.png)
+
+<p align="center">
+  <img src="assets/applied_AI_system_hud.png" alt="PawPal+ Cyberpunk UI" width="800">
+</p>
+
 [![Live Demo](https://img.shields.io/badge/demo-LIVE-brightgreen?style=for-the-badge&logo=streamlit)](https://pawpal-plus-esqzqdlgrnnjsezv6a7r4f.streamlit.app)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/codewarrior777/applied-ai-system/actions)
 [![Lint](https://img.shields.io/badge/lint-passing-brightgreen)](https://github.com/codewarrior777/applied-ai-system/actions)
@@ -258,9 +262,18 @@ Built by **Gustavo Ramos** for the Applied AI System Capstone.
 | Role | Details |
 | :--- | :--- |
 | **Architecture** | AI Agent + Fallback · 2 Mermaid diagrams |
-| **Quality** | 20 tests · 100% core coverage · CI Green |
+| **Quality** | 36 tests · 100% core coverage · CI Green |
 | **AI Stack** | OpenRouter (LLM) · Python Regex (Guardrail) · RAG |
 | **Standards** | PEP 8 · Conventional Commits |
 
 > *"The true test of an AI system is not how it performs when the API works, but how it behaves when the API fails."*
 ```
+
+### 🚀 El último push antes de la presentación
+Guarda el archivo y ejecuta:
+```bash
+git add README.md
+git commit -m "docs: center UI screenshot and fix final test count consistency"
+git push origin main
+```
+

@@ -22,10 +22,10 @@ This project is an evolution of **PawPal+ (Module 2)**, upgraded for the **Appli
 
 ## 🌐 Try It Live
 
-**[▶ Open the Applied AI System on Streamlit Cloud](https://pawpal-plus-esqzqdlgrnnjsezv6a7r4f.streamlit.app)**
+
+**[▶ Open the Applied AI System on Streamlit Cloud](https://applied-ai-system-nhhhlwksdjzwhhotsvw7j.streamlit.app)**
 
 No installation needed — just click and use it in your browser.
-
 ---
 
 ## 📌 What It Does

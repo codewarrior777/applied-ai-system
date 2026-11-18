@@ -270,7 +270,7 @@ Built by **Gustavo Ramos** for the Applied AI System Capstone.
 
 <br>
 
-<p align="center" style="color: #ffffff; font-weight: 900; font-size: 32px; line-height: 1.4; max-width: 900px; margin: 0 auto; text-shadow: 0 0 15px rgba(255,255,255,0.2);">
+<p align="center" style="color: #ffffff; font-weight: 900; font-size: 34px; line-height: 1.5; max-width: 900px; margin: 0 auto; text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 0 0 20px rgba(255,255,255,0.5);">
   "The true test of an AI system is not how it performs when the API works, but how it behaves when the API fails."
 </p>
 

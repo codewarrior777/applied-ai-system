@@ -61,7 +61,7 @@ def run_evaluation():
                 print(f"   Got      -> Time: {result.time}, Pet: {result.pet_name}")
                 failed += 1
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(f"💥 Test {i} CRASHED: '{text}' -> Error: {e}")
             failed += 1
 

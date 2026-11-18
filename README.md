@@ -231,6 +231,9 @@ curl -X POST http://127.0.0.1:8000/api/parse-task \
 - **Test Suite:** 36 passing tests with 100% coverage on the core domain logic (`pawpal_system.py`).
 - **CI Pipeline:** Continuous Integration via GitHub Actions runs `pytest` and `ruff check` on every push to ensure the AI integration didn't break the core logic.
 
+<p align="center">
+  <img src="assets/tests_passed.png" alt="Pytest 36 passed 100% coverage" width="700">
+</p>
 ---
 
 ## 📁 Project Structure

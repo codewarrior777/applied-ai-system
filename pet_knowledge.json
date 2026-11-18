@@ -1,0 +1,7 @@
+{
+  "Cooper": {"diet": "grain-free", "allergies": "chicken", "notes": "Needs long walks"},
+  "Luna": {"diet": "wet food", "allergies": "none", "notes": "Indoor cat"},
+  "Rocky": {"diet": "high protein", "allergies": "beef", "notes": "Senior dog"},
+  "Max": {"diet": "kibble", "allergies": "none", "notes": "Very active"},
+  "Bella": {"diet": "wet food", "allergies": "fish", "notes": "Needs medication"}
+}

@@ -2,6 +2,7 @@
 LLM Agent for parsing natural language tasks in PawPal+.
 Uses OpenRouter (via the OpenAI SDK) to extract structured JSON.
 Includes a Regex fallback for maximum reliability.
+Enhanced with Agentic Trace (step-by-step logging) and Lightweight RAG.
 """
 
 import json
@@ -23,11 +24,28 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Current model
-MODEL = "recursive/flint-v1.0:free"
+MODEL = "meta-llama/llama-3-8b-instruct:free"
+
+
+def _get_pet_context(known_pets: list[str]) -> str:
+    """RAG Helper: Retrieves local knowledge about the pets to enrich the prompt."""
+    context = ""
+    try:
+        with open("pet_knowledge.json", "r", encoding="utf-8") as f:
+            knowledge = json.load(f)
+            for pet in known_pets:
+                if pet in knowledge:
+                    context += f"- {pet}: {knowledge[pet]}\n"
+    except FileNotFoundError:
+        context = "No additional context available."
+    return context
 
 
 def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
-    """AI Agent with Guardrails and Fallback."""
+    """AI Agent with Guardrails, Fallback, Agent Trace, and RAG."""
+
+    # [AGENT TRACE] Step 0: Input Analysis
+    logger.info(f"[Agent Trace] Step 0: Received input '{text}' for pets: {known_pets}")
 
     # Guardrail 0: Check if the API Key exists and is not a placeholder
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -41,8 +59,15 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
         api_key=api_key,
     )
 
+    # [AGENT TRACE] Step 1: RAG Retrieval
+    pet_context = _get_pet_context(known_pets)
+    logger.info("[Agent Trace] Step 1: Retrieved local pet knowledge for RAG.")
+
     system_prompt = f"""
     You are an AI assistant for a pet care app. Extract task details from the user's text.
+    Here is some context about the pets: 
+    {pet_context}
+    
     Return ONLY a valid JSON object with these exact keys:
     - "description": (string) What the task is. Keep the pet's name in it.
     - "time": (string) 24-hour format "HH:MM" (e.g., "07:00", "18:30"). If no time is found, use "12:00".
@@ -54,6 +79,8 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
     """
 
     try:
+        # [AGENT TRACE] Step 2: LLM Planning & Execution
+        logger.info("[Agent Trace] Step 2: Sending enriched prompt to LLM.")
         response = client.chat.completions.create(
             model=MODEL,
             messages=[
@@ -71,6 +98,9 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
         raw_json = re.sub(r"```$", "", raw_json).strip()
 
         data = json.loads(raw_json)
+
+        # [AGENT TRACE] Step 3: Deterministic Validation
+        logger.info("[Agent Trace] Step 3: Running deterministic guardrail validations.")
 
         # Guardrail 2: Validate time
         time_val = data.get("time", "12:00")
@@ -94,7 +124,8 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> ParsedTask:
         if prio_val not in ["high", "medium", "low"]:
             prio_val = "medium"
 
-        logger.info("[Agentic AI] Task successfully extracted by the LLM.")
+        # [AGENT TRACE] Step 4: Final Output
+        logger.info("[Agent Trace] Step 4: Task successfully validated and returned.")
         return ParsedTask(
             description=data.get("description", "Task"),
             time=time_val,

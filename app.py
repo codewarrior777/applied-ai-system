@@ -1,4 +1,4 @@
-"""Streamlit UI for PawPal+ — Cyberpunk Edition (Refined).
+"""Streamlit UI for PawPal+ — Cyberpunk Edition.
 
 SECURITY NOTE:
     This is a public demo. User data is scoped to the browser session
@@ -45,14 +45,14 @@ def local_css():
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
     }
     
-    /* Expandir el ancho del contenedor principal */
+    /* Expand the main container width */
     .block-container {
         max-width: 95% !important; 
         padding-top: 2rem !important;
         padding-bottom: 3rem !important;
     }
 
-    /* Headers con brillo sutil */
+    /* Headers with subtle glow */
     h1, h2, h3 {
         color: #ffffff !important;
         text-shadow: 0 0 8px rgba(255, 0, 255, 0.6) !important;
@@ -169,9 +169,11 @@ def main() -> None:
         initial_sidebar_state="expanded",
     )
 
+    # Inject CSS immediately after page config
     local_css()
+    
     _init_session()
-
+    
     owner: Owner = st.session_state.owner
     scheduler: Scheduler = st.session_state.scheduler
 
@@ -445,16 +447,14 @@ def main() -> None:
 
         parsed = st.session_state.ai_parsed
         source = st.session_state.ai_source
-
+        
         if parsed is not None:
             st.markdown("---")
             st.subheader("📋 Preview")
-
+            
             # Show the user if the LLM succeeded or if the Fallback was triggered
             if source == "fallback":
-                st.warning(
-                    "⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely."
-                )
+                st.warning("⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely.")
             else:
                 st.success("✨ **Parsed successfully by the AI Agent.**")
 

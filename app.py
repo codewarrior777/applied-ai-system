@@ -24,57 +24,64 @@ load_dotenv()
 
 
 def local_css():
-    """Inject custom Cyberpunk CSS with high specificity and larger text."""
+    """Inject custom Cyberpunk CSS optimized for wide layouts and Zoom."""
     st.markdown(
         """
     <style>
-    /* Aumentar tamaño de fuente general */
+    /* General Font Sizes */
     html, body, [class*="css"] {
         font-size: 18px !important;
     }
     .stMarkdown p, .stTextInput label, .stSelectbox label {
         font-size: 1.1rem !important;
     }
-    h1 { font-size: 2.8rem !important; }
-    h2 { font-size: 2.2rem !important; }
-    h3 { font-size: 1.8rem !important; }
+    h1 { font-size: 3.2rem !important; font-weight: bold !important; }
+    h2 { font-size: 2.4rem !important; font-weight: bold !important; }
+    h3 { font-size: 1.8rem !important; font-weight: bold !important; }
 
     /* Background */
     .stApp {
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
     }
     
-    /* Limit width and center content */
+    /* 🚀 ESTRUCTURA: Expandir el ancho del contenedor principal */
     .block-container {
-        max-width: 1200px !important;
+        max-width: 95% !important; /* Ocupa casi toda la pantalla */
         padding-top: 2rem !important;
+        padding-bottom: 3rem !important;
     }
 
     /* Headers */
     h1, h2, h3 {
         color: #ff00ff !important;
         text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff !important;
+        letter-spacing: 1px !important;
     }
     
     /* Sidebar */
     [data-testid="stSidebar"] {
         background-color: #0a0a1a !important;
-        border-right: 1px solid #00ffff !important;
+        border-right: 2px solid #00ffff !important;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.2) !important;
+    }
+    [data-testid="stSidebar"] .block-container {
+        padding: 2rem 1rem !important;
     }
 
     /* Buttons */
     div[data-testid="stButton"] > button {
         border: 1px solid #00ffff !important;
-        box-shadow: 0 0 5px #00ffff !important;
+        box-shadow: 0 0 8px #00ffff !important;
         color: #00ffff !important;
-        background-color: transparent !important;
+        background-color: rgba(0, 255, 255, 0.05) !important;
         border-radius: 5px !important;
         font-size: 1.1rem !important;
+        transition: all 0.3s ease !important;
     }
     div[data-testid="stButton"] > button:hover {
         background-color: #00ffff !important;
         color: #0f0c29 !important;
-        box-shadow: 0 0 15px #00ffff !important;
+        box-shadow: 0 0 20px #00ffff !important;
     }
     
     /* Tabs */
@@ -82,19 +89,23 @@ def local_css():
         color: #00ffff !important;
         border-bottom: 2px solid transparent !important;
         font-size: 1.2rem !important;
+        padding: 10px 20px !important;
+        transition: all 0.3s ease !important;
     }
     button[data-baseweb="tab"][aria-selected="true"] {
         color: #ff00ff !important;
-        border-bottom: 2px solid #ff00ff !important;
-        text-shadow: 0 0 5px #ff00ff !important;
+        border-bottom: 3px solid #ff00ff !important;
+        text-shadow: 0 0 8px #ff00ff !important;
+        background-color: rgba(255, 0, 255, 0.05) !important;
     }
     
-    /* Forms (only the container border) */
+    /* Forms (Glowing Container) */
     [data-testid="stForm"] {
         border: 1px solid #00ffff !important;
-        box-shadow: 0 0 10px #00ffff !important;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.3) !important;
         border-radius: 10px !important;
-        padding: 20px !important;
+        padding: 25px !important;
+        background-color: rgba(10, 10, 26, 0.6) !important;
     }
 
     /* Inputs */
@@ -103,13 +114,26 @@ def local_css():
         color: #00ffff !important;
         border: 1px solid #302b63 !important;
         font-size: 1.1rem !important;
+        border-radius: 5px !important;
+    }
+    .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus {
+        border-color: #ff00ff !important;
+        box-shadow: 0 0 10px #ff00ff !important;
     }
     
-    /* Alerts */
+    /* Alerts & Info boxes */
     .stAlert {
         background-color: #1a1a2e !important;
         border: 1px solid #ff00ff !important;
         font-size: 1.1rem !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        color: #00ffff !important;
+        text-shadow: 0 0 10px #00ffff !important;
+        font-size: 2rem !important;
     }
     </style>
     """,

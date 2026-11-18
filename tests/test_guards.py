@@ -24,6 +24,7 @@ def test_regex_parser_extracts_valid_time():
 
 # --- TESTS PARA EL LLM AGENT Y SUS GUARDS (llm_agent.py) ---
 
+
 # Usamos @patch.dict para forzar que la API KEY exista durante el test
 # y así evitar que la Guardrail 0 se dispare y oculte el verdadero test.
 @patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key-12345"}, clear=True)

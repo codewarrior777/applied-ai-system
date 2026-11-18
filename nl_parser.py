@@ -18,7 +18,7 @@ import logging
 import re
 from dataclasses import asdict, dataclass
 
-# Configurar logging
+# Configure logging
 logger = logging.getLogger(__name__)
 
 
@@ -174,11 +174,11 @@ def parse_task(text: str, known_pets: list[str] | None = None) -> ParsedTask:
     priority, working = _extract_priority(working)
     time_str, working = _extract_time(working)
 
-    # --- ARREGLO AQUÍ ---
-    # Si no se encuentra la hora, usamos "12:00" por defecto en lugar de romper la app.
+    # --- FIX HERE ---
+    # If no time is found, default to "12:00" instead of crashing the app.
     if time_str is None:
         logger.warning(
-            f"[Fallback] No se encontró hora en: {text!r}. Usando 12:00 por defecto."
+            f"[Fallback] No time found in: {text!r}. Defaulting to 12:00."
         )
         time_str = "12:00"
     # --------------------
@@ -209,7 +209,7 @@ if __name__ == "__main__":
         ("vet visit for Prince at 2pm next week", ["Cooper", "Prince"]),
         ("playtime with Cooper at 3:15pm, low priority", ["Cooper"]),
         ("Morning grooming at 09:00", []),
-        ("Feed Prince", ["Prince"]),  # Prueba del fallback
+        ("Feed Prince", ["Prince"]),  # Test fallback
     ]
 
     print("=" * 70)

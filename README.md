@@ -272,11 +272,4 @@ Built by **Gustavo Ramos** for the Applied AI System Capstone.
 > *"The true test of an AI system is not how it performs when the API works, but how it behaves when the API fails."*
 ```
 
-### 🚀 El último push antes de la presentación
-Guarda el archivo y ejecuta:
-```bash
-git add README.md
-git commit -m "docs: center UI screenshot and fix final test count consistency"
-git push origin main
-```
 

@@ -1,4 +1,5 @@
 # 🐾 PawPal+ — Applied AI System
+
 <p align="center">
   <img src="assets/applied_AI_system_hud.png" alt="PawPal+ Cyberpunk UI" width="800">
 </p>
@@ -234,6 +235,7 @@ curl -X POST http://127.0.0.1:8000/api/parse-task \
   <img src="assets/test_passed.png" alt="Pytest 36 passed 100% coverage" width="700">
 </p>
 
+---
 
 ## 📁 Project Structure
 
@@ -258,7 +260,7 @@ applied-ai-system/
 ├── pet_knowledge.json         # Local knowledge base for RAG
 ├── model_card.md              # AI Collaboration & Reliability Reflection
 └── requirements.txt
-
+```
 
 ---
 
@@ -280,3 +282,5 @@ Built by **Gustavo Ramos** for the Applied AI System Capstone.
 </p>
 
 <br>
+```
+

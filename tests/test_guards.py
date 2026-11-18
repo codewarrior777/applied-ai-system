@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock, patch
 
 from llm_agent import parse_task_with_llm
@@ -8,7 +9,6 @@ from nl_parser import ParsedTask, parse_task
 
 def test_regex_parser_defaults_to_12_00_when_no_time():
     """Verify that the regex parser defaults to 12:00 if no time is found."""
-    # Este es el ejemplo del README que fallaba antes
     result = parse_task("Feed Prince", ["Prince"])
     assert result.time == "12:00"
     assert result.description == "Feed Prince"
@@ -24,7 +24,9 @@ def test_regex_parser_extracts_valid_time():
 
 # --- TESTS PARA EL LLM AGENT Y SUS GUARDS (llm_agent.py) ---
 
-
+# Usamos @patch.dict para forzar que la API KEY exista durante el test
+# y así evitar que la Guardrail 0 se dispare y oculte el verdadero test.
+@patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key-12345"}, clear=True)
 @patch("llm_agent.client.chat.completions.create")
 def test_llm_agent_fallback_when_api_fails(mock_create):
     """Verify that if the API fails, it falls back to the regex parser."""
@@ -36,12 +38,14 @@ def test_llm_agent_fallback_when_api_fails(mock_create):
     # Debería usar el fallback de regex y no romperse
     assert isinstance(result, ParsedTask)
     assert result.time == "12:00"
+    # Verificamos que el mock SÍ fue llamado (el test es real)
+    mock_create.assert_called_once()
 
 
+@patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key-12345"}, clear=True)
 @patch("llm_agent.client.chat.completions.create")
 def test_llm_agent_cleans_markdown(mock_create):
     """Verify Guardrail 1: The agent strips markdown code blocks from the LLM response."""
-    # Simulamos que el LLM devuelve JSON con markdown
     mock_response = MagicMock()
     mock_response.choices[
         0
@@ -50,12 +54,13 @@ def test_llm_agent_cleans_markdown(mock_create):
 
     result = parse_task_with_llm("Walk Cooper at 7am daily", ["Cooper"])
     assert result.time == "07:00"
+    mock_create.assert_called_once()
 
 
+@patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key-12345"}, clear=True)
 @patch("llm_agent.client.chat.completions.create")
 def test_llm_agent_guardrail_invalid_time(mock_create):
     """Verify Guardrail 2: The agent defaults to 12:00 if the LLM hallucinates an invalid time."""
-    # Simulamos que el LLM devuelve una hora inválida (25:00)
     mock_response = MagicMock()
     mock_response.choices[
         0
@@ -63,10 +68,11 @@ def test_llm_agent_guardrail_invalid_time(mock_create):
     mock_create.return_value = mock_response
 
     result = parse_task_with_llm("Feed Prince at 25:00", ["Prince"])
-    # El guardrail debe corregirlo a 12:00
     assert result.time == "12:00"
+    mock_create.assert_called_once()
 
 
+@patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key-12345"}, clear=True)
 @patch("llm_agent.client.chat.completions.create")
 def test_llm_agent_guardrail_unknown_pet(mock_create):
     """Verify Guardrail 3: The agent sets pet_name to None if the pet is not in the known list."""
@@ -77,21 +83,21 @@ def test_llm_agent_guardrail_unknown_pet(mock_create):
     mock_create.return_value = mock_response
 
     result = parse_task_with_llm("Feed UnknownPet", ["Prince", "Cooper"])
-    # El guardrail debe anular el nombre de la mascota desconocida
     assert result.pet_name is None
+    mock_create.assert_called_once()
 
 
+@patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key-12345"}, clear=True)
 @patch("llm_agent.client.chat.completions.create")
 def test_llm_agent_guardrail_invalid_frequency_and_priority(mock_create):
     """Verify Guardrail 4: The agent corrects invalid frequency and priority values."""
     mock_response = MagicMock()
-    # Simulamos que el LLM devuelve valores que no están permitidos
     mock_response.choices[
         0
     ].message.content = '{"description": "Walk Cooper", "time": "10:00", "frequency": "every hour", "priority": "urgent", "pet_name": "Cooper"}'
     mock_create.return_value = mock_response
 
     result = parse_task_with_llm("Walk Cooper every hour", ["Cooper"])
-    # Los guardrails deben corregirlos a los valores por defecto
     assert result.frequency == "once"
     assert result.priority == "medium"
+    mock_create.assert_called_once()

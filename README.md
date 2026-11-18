@@ -259,7 +259,6 @@ applied-ai-system/
 ├── model_card.md              # AI Collaboration & Reliability Reflection
 └── requirements.txt
 
----
 
 ## 🙏 Credits
 

@@ -55,7 +55,7 @@ def test_llm_agent_cleans_markdown(mock_openai):
     mock_client.chat.completions.create.return_value = mock_response
 
     result, source = parse_task_with_llm("Walk Cooper at 7am daily", ["Cooper"])
-    
+
     assert result.time == "07:00"
     assert source == "llm"
     mock_client.chat.completions.create.assert_called_once()
@@ -74,7 +74,7 @@ def test_llm_agent_guardrail_invalid_time(mock_openai):
     mock_client.chat.completions.create.return_value = mock_response
 
     result, source = parse_task_with_llm("Feed Prince at 25:00", ["Prince"])
-    
+
     assert result.time == "12:00"
     assert source == "llm"
     mock_client.chat.completions.create.assert_called_once()
@@ -93,7 +93,7 @@ def test_llm_agent_guardrail_unknown_pet(mock_openai):
     mock_client.chat.completions.create.return_value = mock_response
 
     result, source = parse_task_with_llm("Feed UnknownPet", ["Prince", "Cooper"])
-    
+
     assert result.pet_name is None
     assert source == "llm"
     mock_client.chat.completions.create.assert_called_once()
@@ -112,7 +112,7 @@ def test_llm_agent_guardrail_invalid_frequency_and_priority(mock_openai):
     mock_client.chat.completions.create.return_value = mock_response
 
     result, source = parse_task_with_llm("Walk Cooper every hour", ["Cooper"])
-    
+
     assert result.frequency == "once"
     assert result.priority == "medium"
     assert source == "llm"

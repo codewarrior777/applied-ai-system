@@ -43,7 +43,7 @@ def _get_pet_context(known_pets: list[str]) -> str:
 
 def parse_task_with_llm(text: str, known_pets: list[str]) -> tuple[ParsedTask, str]:
     """AI Agent with Guardrails, Fallback, Agent Trace, and RAG.
-    
+
     Returns:
         tuple[ParsedTask, str]: The parsed task and the source ("llm" or "fallback").
     """
@@ -133,7 +133,7 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> tuple[ParsedTask, s
 
         # [AGENT TRACE] Step 4: Final Output
         logger.info("[Agent Trace] Step 4: Task successfully validated and returned.")
-        
+
         # 👇 AQUÍ AGREGAMOS EL ORIGEN "llm"
         return (
             ParsedTask(
@@ -149,6 +149,6 @@ def parse_task_with_llm(text: str, known_pets: list[str]) -> tuple[ParsedTask, s
     except Exception as e:  # noqa: BLE001
         # Fallback: If the API fails (404, 429, timeout, etc.), use Regex and don't crash.
         logger.error(f"[Guardrail] LLM error ({e}). Using Regex parser (Fallback).")
-        
+
         # 👇 AQUÍ AGREGAMOS EL ORIGEN "fallback"
         return regex_parse_task(text, known_pets), "fallback"

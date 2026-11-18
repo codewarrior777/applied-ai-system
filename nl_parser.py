@@ -177,9 +177,7 @@ def parse_task(text: str, known_pets: list[str] | None = None) -> ParsedTask:
     # --- FIX HERE ---
     # If no time is found, default to "12:00" instead of crashing the app.
     if time_str is None:
-        logger.warning(
-            f"[Fallback] No time found in: {text!r}. Defaulting to 12:00."
-        )
+        logger.warning(f"[Fallback] No time found in: {text!r}. Defaulting to 12:00.")
         time_str = "12:00"
     # --------------------
 

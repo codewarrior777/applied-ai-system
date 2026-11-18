@@ -33,13 +33,13 @@ def parse_task_endpoint(request: ParseRequest):
     try:
         # Unpack the tuple returned by the agent (task, source)
         parsed, source = parse_task_with_llm(request.text, request.known_pets)
-        
+
         # Convert to dictionary, inject the source, and return
         response_data = parsed.to_dict()
         response_data["source"] = source
-        
+
         return ParseResponse(**response_data)
-        
+
     except ValueError as e:
         # Catch specific parsing errors (data validation)
         raise HTTPException(status_code=422, detail=str(e)) from e

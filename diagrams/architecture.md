@@ -1,3 +1,6 @@
+# PawPal+ AI Architecture
+
+```mermaid
 graph TD
     %% User Input
     User([👤 User Input]) -->|Text: 'Walk Cooper at 7am'| UI[💻 Streamlit UI / FastAPI]

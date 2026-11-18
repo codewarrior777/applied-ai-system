@@ -282,5 +282,5 @@ Built by **Gustavo Ramos** for the Applied AI System Capstone.
 </p>
 
 <br>
-```
+
 

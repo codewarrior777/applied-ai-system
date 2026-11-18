@@ -24,7 +24,7 @@ load_dotenv()
 
 
 def local_css():
-    """Inject custom Cyberpunk CSS."""
+    """Inject custom Cyberpunk CSS optimized for large screens/Zoom."""
     st.markdown(
         """
     <style>
@@ -34,6 +34,13 @@ def local_css():
         color: #00ffff;
     }
     
+    /* Limit the width of the main container so it doesn't stretch too much in Zoom */
+    .block-container {
+        max-width: 1100px;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
     /* Headers */
     h1, h2, h3 {
         color: #ff00ff !important;
@@ -136,7 +143,9 @@ def main() -> None:
     owner: Owner = st.session_state.owner
     scheduler: Scheduler = st.session_state.scheduler
 
+    # ------------------------------------------------------------------
     # SECURITY DISCLAIMER
+    # ------------------------------------------------------------------
     st.warning(
         "⚠️ **Public demo** — Your data lives in this browser session only "
         "and is **NOT stored on the server**. You can download it manually. "
@@ -144,7 +153,9 @@ def main() -> None:
         icon="🔒",
     )
 
+    # ------------------------------------------------------------------
     # First-run onboarding
+    # ------------------------------------------------------------------
     if not _is_onboarded(owner):
         st.title("🐾 Welcome to PawPal+")
         st.caption("Smart Pet Care Management System")
@@ -163,7 +174,9 @@ def main() -> None:
 
         st.stop()
 
+    # ------------------------------------------------------------------
     # Main app
+    # ------------------------------------------------------------------
     st.title(f"🐾 PawPal+ — Welcome, {owner.name}!")
     st.caption("Smart Pet Care Management System")
 
@@ -207,6 +220,14 @@ def main() -> None:
             st.session_state.owner = Owner.from_dict(data)
             st.sidebar.success(f"Restored {len(data.get('pets', []))} pet(s)")
             st.rerun()
+        except (
+            json.JSONDecodeError,
+            UnicodeDecodeError,
+            KeyError,
+            TypeError,
+            ValueError,
+        ) as e:
+            st.sidebar.error(f"Could not read file: {e}")
         except Exception as e:  # noqa: BLE001
             st.sidebar.error(f"Could not read file: {e}")
 
@@ -254,12 +275,16 @@ def main() -> None:
     else:
         st.sidebar.info("No pets registered yet.")
 
+    # ------------------------------------------------------------------
     # Main UI Tabs
+    # ------------------------------------------------------------------
     tab_pet, tab_task, tab_ai, tab_schedule = st.tabs(
         ["🐶 Add Pet", "📝 Add Task", "🪄 AI Assistant", "📅 Today's Schedule"]
     )
 
+    # ------------------------------------------------------------------
     # TAB 1: Add Pet
+    # ------------------------------------------------------------------
     with tab_pet:
         st.subheader("Add a New Pet")
         with st.form("add_pet_form", clear_on_submit=True):
@@ -290,7 +315,9 @@ def main() -> None:
         else:
             st.info("No pets added yet. Use the form above to add your first pet!")
 
+    # ------------------------------------------------------------------
     # TAB 2: Add Task (manual)
+    # ------------------------------------------------------------------
     with tab_task:
         st.subheader("Add a Task for a Pet")
         if not owner.pets:
@@ -332,7 +359,9 @@ def main() -> None:
                     else:
                         st.error("Please enter a task description.")
 
-    # TAB 3: AI Assistant
+    # ------------------------------------------------------------------
+    # TAB 3: AI Assistant — Natural Language Parsing (LLM Agent)
+    # ------------------------------------------------------------------
     with tab_ai:
         st.subheader("🪄 AI Task Assistant")
         st.write(
@@ -371,7 +400,9 @@ def main() -> None:
                 st.error("Please enter some text first.")
             else:
                 try:
+                    # Call the AI Agent (with Guardrails)
                     known_pets = [p.name for p in owner.pets]
+                    # Unpack the tuple returned by the agent
                     parsed, source = parse_task_with_llm(nl_text, known_pets)
                     st.session_state.ai_parsed = parsed
                     st.session_state.ai_source = source
@@ -382,16 +413,14 @@ def main() -> None:
 
         parsed = st.session_state.ai_parsed
         source = st.session_state.ai_source
-
+        
         if parsed is not None:
             st.markdown("---")
             st.subheader("📋 Preview")
-
+            
+            # Show the user if the LLM succeeded or if the Fallback was triggered
             if source == "fallback":
-                st.warning(
-                    "⚠️ **Note:** The AI API is currently unavailable. We used the "
-                    "deterministic Regex parser to ensure your task was processed safely."
-                )
+                st.warning("⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely.")
             else:
                 st.success("✨ **Parsed successfully by the AI Agent.**")
 
@@ -446,7 +475,9 @@ def main() -> None:
                     "Go to the '🐶 Add Pet' tab first."
                 )
 
+    # ------------------------------------------------------------------
     # TAB 4: Today's Schedule
+    # ------------------------------------------------------------------
     with tab_schedule:
         st.subheader("Today's Care Schedule")
         all_tasks = owner.get_all_tasks()

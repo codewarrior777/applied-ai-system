@@ -1,4 +1,3 @@
-```markdown
 # 🐾 PawPal+ — Applied AI System
 
 [![Live Demo](https://img.shields.io/badge/demo-LIVE-brightgreen?style=for-the-badge&logo=streamlit)](https://pawpal-plus-esqzqdlgrnnjsezv6a7r4f.streamlit.app)

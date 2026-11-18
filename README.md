@@ -270,6 +270,5 @@ Built by **Gustavo Ramos** for the Applied AI System Capstone.
 | **Standards** | PEP 8 · Conventional Commits |
 
 > *"The true test of an AI system is not how it performs when the API works, but how it behaves when the API fails."*
-```
 
 

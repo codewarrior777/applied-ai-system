@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 from llm_agent import parse_task_with_llm
 from pawpal_system import Owner, Pet, Scheduler, Task
 
-# Cargar variables de entorno (OPENROUTER_API_KEY)
+# Load environment variables (OPENROUTER_API_KEY)
 load_dotenv()
 
 
@@ -36,7 +36,7 @@ def _init_session() -> None:
         st.session_state.scheduler = Scheduler()
     if "ai_parsed" not in st.session_state:
         st.session_state.ai_parsed = None
-    # NUEVO: Guardamos también la fuente (llm o fallback)
+    # NEW: Store the source of the parsed task ("llm" or "fallback")
     if "ai_source" not in st.session_state:
         st.session_state.ai_source = None
 
@@ -305,9 +305,9 @@ def main() -> None:
                 st.error("Please enter some text first.")
             else:
                 try:
-                    # Usamos el nuevo Agente de IA con Guardrails
+                    # Call the AI Agent (with Guardrails)
                     known_pets = [p.name for p in owner.pets]
-                    # 👇 AQUÍ ESTÁ EL CAMBIO: Desempaquetamos la tupla
+                    # Unpack the tuple returned by the agent
                     parsed, source = parse_task_with_llm(nl_text, known_pets)
                     st.session_state.ai_parsed = parsed
                     st.session_state.ai_source = source
@@ -323,7 +323,7 @@ def main() -> None:
             st.markdown("---")
             st.subheader("📋 Preview")
             
-            # 👇 NUEVO: Mostramos al usuario si se usó el LLM o el Fallback
+            # Show the user if the LLM succeeded or if the Fallback was triggered
             if source == "fallback":
                 st.warning("⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely.")
             else:

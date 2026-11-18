@@ -5,9 +5,11 @@ from llm_agent import parse_task_with_llm
 
 app = FastAPI(title="PawPal+ AI API")
 
+
 class ParseRequest(BaseModel):
     text: str
     known_pets: list[str] = []
+
 
 class ParseResponse(BaseModel):
     description: str
@@ -15,6 +17,7 @@ class ParseResponse(BaseModel):
     frequency: str
     priority: str
     pet_name: str | None
+
 
 @app.post("/api/parse-task", response_model=ParseResponse)
 def parse_task_endpoint(request: ParseRequest):
@@ -24,13 +27,18 @@ def parse_task_endpoint(request: ParseRequest):
     """
     if not request.text.strip():
         raise HTTPException(status_code=400, detail="El texto no puede estar vacío.")
-    
+
     try:
         # Aquí llamamos al AGENTE (no al parser directo)
         parsed = parse_task_with_llm(request.text, request.known_pets)
         return ParseResponse(**parsed.to_dict())
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except ValueError as e:
+        # Atrapamos errores específicos de parseo (validación de datos)
+        raise HTTPException(status_code=422, detail=str(e)) from e
+    except Exception as e:  # noqa: BLE001
+        # Atrapamos cualquier otro error inesperado (ej. caída de red)
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
 
 @app.get("/health")
 def health_check():

@@ -239,10 +239,15 @@ curl -X POST http://127.0.0.1:8000/api/parse-task \
 
 ```text
 applied-ai-system/
+├── assets/                    # Screenshots and UI images
+│   ├── applied_AI_system_hud.png
+│   └── test_passed.png
 ├── diagrams/
 │   ├── class_diagram.md       # OOP Class structure (Mermaid)
 │   └── architecture.md        # AI Workflow data flow (Mermaid)
 ├── .github/workflows/         # CI: pytest + ruff
+├── .streamlit/                # Cyberpunk theme configuration
+│   └── config.toml
 ├── tests/                     # 36 passing tests
 ├── app.py                     # Streamlit UI (uses LLM Agent)
 ├── api.py                     # FastAPI endpoints (uses LLM Agent)
@@ -253,7 +258,6 @@ applied-ai-system/
 ├── pet_knowledge.json         # Local knowledge base for RAG
 ├── model_card.md              # AI Collaboration & Reliability Reflection
 └── requirements.txt
-```
 
 ---
 

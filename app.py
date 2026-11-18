@@ -171,9 +171,9 @@ def main() -> None:
 
     # Inject CSS immediately after page config
     local_css()
-    
+
     _init_session()
-    
+
     owner: Owner = st.session_state.owner
     scheduler: Scheduler = st.session_state.scheduler
 
@@ -447,14 +447,16 @@ def main() -> None:
 
         parsed = st.session_state.ai_parsed
         source = st.session_state.ai_source
-        
+
         if parsed is not None:
             st.markdown("---")
             st.subheader("📋 Preview")
-            
+
             # Show the user if the LLM succeeded or if the Fallback was triggered
             if source == "fallback":
-                st.warning("⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely.")
+                st.warning(
+                    "⚠️ **Note:** The AI API is currently unavailable. We used the deterministic Regex parser to ensure your task was processed safely."
+                )
             else:
                 st.success("✨ **Parsed successfully by the AI Agent.**")
 

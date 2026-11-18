@@ -4,7 +4,7 @@
   <img src="assets/applied_AI_system_hud.png" alt="PawPal+ Cyberpunk UI" width="800">
 </p>
 
-[![Live Demo](https://img.shields.io/badge/demo-LIVE-brightgreen?style=for-the-badge&logo=streamlit)](https://pawpal-plus-esqzqdlgrnnjsezv6a7r4f.streamlit.app)
+[![Live Demo](https://img.shields.io/badge/demo-LIVE-brightgreen?style=for-the-badge&logo=streamlit)](https://applied-ai-system-nhhhlwksdjzwhhotsvw7j.streamlit.app)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](https://github.com/codewarrior777/applied-ai-system/actions)
 [![Lint](https://img.shields.io/badge/lint-passing-brightgreen)](https://github.com/codewarrior777/applied-ai-system/actions)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/codewarrior777/applied-ai-system)
@@ -22,10 +22,10 @@ This project is an evolution of **PawPal+ (Module 2)**, upgraded for the **Appli
 
 ## 🌐 Try It Live
 
-
 **[▶ Open the Applied AI System on Streamlit Cloud](https://applied-ai-system-nhhhlwksdjzwhhotsvw7j.streamlit.app)**
 
 No installation needed — just click and use it in your browser.
+
 ---
 
 ## 📌 What It Does
@@ -282,5 +282,5 @@ Built by **Gustavo Ramos** for the Applied AI System Capstone.
 </p>
 
 <br>
-
+```
 

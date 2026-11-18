@@ -234,7 +234,7 @@ curl -X POST http://127.0.0.1:8000/api/parse-task \
 <p align="center">
   <img src="assets/test_passed.png" alt="Pytest 36 passed 100% coverage" width="700">
 </p>
----
+
 
 ## 📁 Project Structure
 
